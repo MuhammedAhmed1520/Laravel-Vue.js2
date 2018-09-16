@@ -28,6 +28,7 @@
         <hr>
         <button class="btn btn-primary mb-2" @click="editArticle(article)">Edit</button>
         <button class="btn btn-danger" @click="deleteArticle(article.id)">Delete</button>
+
     </div>
     </div>
 </template>
@@ -71,16 +72,36 @@
                     this.pagination = pagination;
                 },
                 deleteArticle(id){
-                   if(confirm('Are You sure ?')){
-                     fetch('api/article/'+id,{
-                       method:'delete'
-                     })
-                     .then(res => res.json())
-                     .then(data => {
-                       alert('Article Removed');
-                       this.fetchArticles();
-                     })
-                   }
+                  // Use sweetalret2
+                  this.$swal(
+                    {
+                       title: 'Are you sure?',
+                       text: "You won't be able to revert this!",
+                       type: 'warning',
+                       showCancelButton: true,
+                       confirmButtonColor: '#3085d6',
+                       cancelButtonColor: '#d33',
+                       confirmButtonText: 'Yes, delete it!'
+                     }).then((result) => {
+                       if (result.value) {
+                         fetch('api/article/'+id,{
+                           method:'delete'
+                         })
+                         .then(res => res.json())
+                         .then(data => {
+                           this.$swal(
+                            'Deleted!',
+                            'Your Article has been deleted.',
+                            'success'
+                            )
+                           this.fetchArticles();
+                         })
+
+                         }
+                       });
+
+
+
                 },
                 addArticle(){
                   if(!this.edit){
@@ -96,6 +117,11 @@
                       this.article.title = '',
                       this.article.body = '',
                       this.fetchArticles();
+                      this.$swal(
+                       'Added!',
+                       'Your Article has been Added',
+                       'success'
+                       )
                     })
                   }else{
                     fetch('api/article',{
@@ -110,6 +136,11 @@
                       this.article.title = '',
                       this.article.body = '',
                       this.fetchArticles();
+                      this.$swal(
+                       'Updated!',
+                       'Your Article has been Updated.',
+                       'success'
+                       )
                     })
                   }
                 },
@@ -120,7 +151,7 @@
                   this.article.title = article.title;
                   this.article.body = article.body;
 
-                }
+                },
             }
         }
 
